@@ -33,8 +33,8 @@
 #  endif
 
 #  ifdef LARGE_DATASET
-#   define M 1000
-#   define N 1200
+#   define M 512
+#   define N 512
 #  endif
 
 #  ifdef EXTRALARGE_DATASET

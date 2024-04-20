@@ -20,7 +20,7 @@
 /* Include benchmark-specific header. */
 #include "gesummv.h"
 
-
+#include <omp.h>
 /* Array initialization. */
 static
 void init_array(int n,
@@ -80,19 +80,20 @@ void kernel_gesummv(int n,
   int i, j;
 
 #pragma scop
-  for (i = 0; i < _PB_N; i++)
-    {
-      tmp[i] = SCALAR_VAL(0.0);
-      y[i] = SCALAR_VAL(0.0);
-      for (j = 0; j < _PB_N; j++)
-	{
-	  tmp[i] = A[i][j] * x[j] + tmp[i];
-	  y[i] = B[i][j] * x[j] + y[i];
-	}
-      y[i] = alpha * tmp[i] + beta * y[i];
-    }
+#pragma omp parallel
+{
+# pragma omp for private(j)
+  for (i = 0; i < _PB_N; i++) {
+    tmp[i] = SCALAR_VAL(0.0);
+    y[i] = SCALAR_VAL(0.0);
+    for (j = 0; j < _PB_N; j++) {
+	    tmp[i] = A[i][j] * x[j] + tmp[i];
+	    y[i] = B[i][j] * x[j] + y[i];
+	  }
+    y[i] = alpha * tmp[i] + beta * y[i];
+  }
+}
 #pragma endscop
-
 }
 
 
