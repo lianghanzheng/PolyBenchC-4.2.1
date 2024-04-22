@@ -34,7 +34,7 @@
 
 #  ifdef LARGE_DATASET
 #   define M 16384
-#   define N 16284
+#   define N 16384
 #  endif
 
 #  ifdef EXTRALARGE_DATASET
@@ -51,7 +51,7 @@
 
 /* Default data type */
 # if !defined(DATA_TYPE_IS_INT) && !defined(DATA_TYPE_IS_FLOAT) && !defined(DATA_TYPE_IS_DOUBLE)
-#  define DATA_TYPE_IS_DOUBLE
+#  define DATA_TYPE_IS_FLOAT
 # endif
 
 #ifdef DATA_TYPE_IS_INT

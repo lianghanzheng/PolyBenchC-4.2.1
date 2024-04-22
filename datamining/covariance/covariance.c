@@ -87,14 +87,15 @@ void kernel_covariance(int m, int n,
       data[i][j] -= mean[j];
 
 # pragma omp for private(j, k)
-  for (i = 0; i < _PB_M; i++)
+  for (i = 0; i < _PB_M; i++) {
+    cov[i][i] = SCALAR_VAL(1.0);
     for (j = i; j < _PB_M; j++) {
       cov[i][j] = SCALAR_VAL(0.0);
       for (k = 0; k < _PB_N; k++)
-	      cov[i][j] += data[k][i] * data[k][j];
-      cov[i][j] /= (float_n - SCALAR_VAL(1.0));
+	cov[i][j] += data[k][i] * data[k][j];
       cov[j][i] = cov[i][j];
     }
+  }
 }
 #pragma endscop
 }

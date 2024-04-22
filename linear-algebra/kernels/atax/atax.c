@@ -73,18 +73,16 @@ void kernel_atax(int m, int n,
 #pragma scop
 #pragma omp parallel
 {
-# pragma omp for
+# pragma omp for private(j)
   for (i = 0; i < _PB_N; i++)
-    y[i] = 0;
+    tmp[i] = SCALAR_VAL(0.0);
+    for (j = 0; j < _PB_M; j++)
+      tmp[i] += A[i][j] * x[j];
 
 # pragma omp for private(j)
-  for (i = 0; i < _PB_M; i++){
-    tmp[i] = SCALAR_VAL(0.0);
-    for (j = 0; j < _PB_N; j++)
-	    tmp[i] = tmp[i] + A[i][j] * x[j];
-    for (j = 0; j < _PB_N; j++)
-	    y[j] = y[j] + A[i][j] * tmp[i];
-  }
+  for (j = 0; j < _PB_N; j++)
+    for (i = 0; i < _PB_M; i++)
+      y[j] = y[j] + A[i][j] * tmp[i];
 }
 #pragma endscop
 }

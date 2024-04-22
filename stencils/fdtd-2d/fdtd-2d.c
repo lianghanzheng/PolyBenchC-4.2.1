@@ -20,7 +20,7 @@
 /* Include benchmark-specific header. */
 #include "fdtd-2d.h"
 
-
+#include <omp.h>
 /* Array initialization. */
 static
 void init_array (int tmax,
@@ -96,26 +96,28 @@ void kernel_fdtd_2d(int tmax,
 		    DATA_TYPE POLYBENCH_1D(_fict_,TMAX,tmax))
 {
   int t, i, j;
-
 #pragma scop
-
-  for(t = 0; t < _PB_TMAX; t++)
-    {
-      for (j = 0; j < _PB_NY; j++)
-	ey[0][j] = _fict_[t];
+#pragma omp parallel private (t,i,j)
+{   
+  for (t = 0; t < _PB_TMAX; t++) {   
+    #pragma omp for
+    for (j = 0; j < _PB_NY; j++)
+      ey[0][j] = _fict_[t];
+    #pragma omp for
       for (i = 1; i < _PB_NX; i++)
-	for (j = 0; j < _PB_NY; j++)
-	  ey[i][j] = ey[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i-1][j]);
+        for (j = 0; j < _PB_NY; j++)
+          ey[i][j] = ey[i][j] - 0.5*(hz[i][j]-hz[i-1][j]);
+    #pragma omp for 
       for (i = 0; i < _PB_NX; i++)
-	for (j = 1; j < _PB_NY; j++)
-	  ex[i][j] = ex[i][j] - SCALAR_VAL(0.5)*(hz[i][j]-hz[i][j-1]);
+        for (j = 1; j < _PB_NY; j++)
+          ex[i][j] = ex[i][j] - 0.5*(hz[i][j]-hz[i][j-1]);
+    #pragma omp for
       for (i = 0; i < _PB_NX - 1; i++)
-	for (j = 0; j < _PB_NY - 1; j++)
-	  hz[i][j] = hz[i][j] - SCALAR_VAL(0.7)*  (ex[i][j+1] - ex[i][j] +
-				       ey[i+1][j] - ey[i][j]);
-    }
-
-#pragma endscop
+        for (j = 0; j < _PB_NY - 1; j++)
+          hz[i][j] = hz[i][j] - 0.7*  (ex[i][j+1] - ex[i][j] + ey[i+1][j] - ey[i][j]);
+  }   
+}   
+  #pragma endscop
 }
 
 

@@ -37,8 +37,8 @@
 
 #  ifdef LARGE_DATASET
 #   define TMAX 500
-#   define NX 1000
-#   define NY 1200
+#   define NX 512
+#   define NY 512
 #  endif
 
 #  ifdef EXTRALARGE_DATASET
@@ -57,7 +57,7 @@
 
 /* Default data type */
 # if !defined(DATA_TYPE_IS_INT) && !defined(DATA_TYPE_IS_FLOAT) && !defined(DATA_TYPE_IS_DOUBLE)
-#  define DATA_TYPE_IS_DOUBLE
+#  define DATA_TYPE_IS_FLOAT
 # endif
 
 #ifdef DATA_TYPE_IS_INT
